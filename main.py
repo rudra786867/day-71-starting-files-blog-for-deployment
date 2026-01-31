@@ -14,7 +14,10 @@ from forms import CreatePostForm, RegisterForm, LoginForm, CommentForm
 # Optional: add contact me email functionality (Day 60)
 import os
 import smtplib
-
+from dotenv import load_dotenv
+from pathlib import Path
+env_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 
 
@@ -34,7 +37,8 @@ This will install the packages from the requirements.txt for this project.
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+app.config['SECRET_KEY'] = os.environ.get('SCREEET_KEY')
+
 ckeditor = CKEditor(app)
 Bootstrap5(app)
 
@@ -61,7 +65,8 @@ gravatar = Gravatar(app,
 # CREATE DATABASE
 class Base(DeclarativeBase):
     pass
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
+
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
@@ -279,8 +284,7 @@ def about():
 # Optional: You can include the email sending code from Day 60:
 # DON'T put your email and password here directly! The code will be visible when you upload to Github.
 # Use environment variables instead (Day 35)
-from dotenv import load_dotenv
-from pathlib import Path
+
 
 env_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=env_path)
