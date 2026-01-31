@@ -129,8 +129,12 @@ def logout():
 
 @app.route('/')
 def get_all_posts():
-    posts = db.session.execute(db.select(BlogPost)).scalars().all()
+    try:
+        posts = db.session.execute(db.select(BlogPost)).scalars().all()
+    except:
+        posts = []  # Empty list if DB error
     return render_template("index.html", all_posts=posts, current_user=current_user)
+
 
 @app.route("/post/<int:post_id>", methods=["GET", "POST"])
 def show_post(post_id):
