@@ -127,13 +127,41 @@ def logout():
     logout_user()
     return redirect(url_for('get_all_posts'))
 
+
+# DEBUG ROUTES - YE ADD KAR
+@app.route('/test')
+def test():
+    return "<h1>🎉 SERVER PERFECT! Templates issue!</h1><p><a href='/'>Home</a> | <a href='/debug'>Debug</a></p>"
+
+
+@app.route('/debug')
+def debug():
+    import os
+    return f"""
+    <h1>DEBUG INFO</h1>
+    <p>Current dir: {os.getcwd()}</p>
+    <p>Templates folder exists: {os.path.exists('templates')}</p>
+    <p>index.html exists: {os.path.exists('templates/index.html') if os.path.exists('templates') else 'No templates folder'}</p>
+    <p>Files in current dir: {os.listdir('.') if os.path.exists('.') else 'Cannot list'}</p>
+    """
+
+
 @app.route('/')
 def get_all_posts():
     try:
         posts = db.session.execute(db.select(BlogPost)).scalars().all()
     except:
-        posts = []  # Empty list if DB error
-    return render_template("index.html", all_posts=posts, current_user=current_user)
+        posts = []
+
+    # FAIL-SAFE: Agar index.html nahi hai to plain HTML bhej
+    try:
+        return render_template("index.html", all_posts=posts, current_user=current_user)
+    except:
+        return """
+        <h1>🎉 Rudra's Blog - LIVE!</h1>
+        <p>No posts yet. <a href="/register">Register</a> | <a href="/login">Login</a></p>
+        <p><a href="/test">Test Server</a> | <a href="/debug">Debug Info</a></p>
+        """
 
 
 @app.route("/post/<int:post_id>", methods=["GET", "POST"])
